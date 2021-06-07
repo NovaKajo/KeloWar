@@ -87,4 +87,8 @@ public class MummyAnimationBehaviour : AIAnimator  //esta clase depende unicamen
     {
         myAnim.SetBool("Stirr", false);
     }
+    public override void ResetTrigger(string animationName)
+    {
+        myAnim.ResetTrigger(animationName);
+    }
 }

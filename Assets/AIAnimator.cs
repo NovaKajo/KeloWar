@@ -13,6 +13,7 @@ namespace Kelo.AI{
         abstract public void AttackAnimationAI();
         abstract public void Die(bool value);
         abstract public void GetHit(float position);
+        abstract public void ResetTrigger(string animationName);
 
         public void Init()
         {

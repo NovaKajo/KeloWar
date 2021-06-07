@@ -14,18 +14,25 @@ namespace Kelo.AI
     [SerializeField] private float attackRange = 2f;
     [SerializeField] float TimeBetweenAttacks = 1f;
     [SerializeField] int figtherDamage = 5;
-
     [SerializeField]Transform target;
+    [SerializeField] bool canMove = true;
+
+    [SerializeField] bool basicAttackBehaviour = true;
+
 
     private AIMover AImover;
 
+
+    public AttackBehaviour attack;
     //[SerializeField] private Health health;
 
     private void Awake()
     {
+        
         if(GetComponent<AIAnimator>())
         myAnim = GetComponent<AIAnimator>();
         AImover = GetComponent<AIMover>();
+
     }
 
     private void Update()
@@ -34,8 +41,12 @@ namespace Kelo.AI
 
         if (target == null) return;
         if (target.GetComponentInParent<Health>().IsDead()) return;
-
+        
+        if(canMove)
+        {
         AImover.MoveTo(target.position, 1f);
+        }
+
         if (IsInRange(target.transform))
         {
 
@@ -48,7 +59,7 @@ namespace Kelo.AI
                 timeSinceLastAttack = 0;
             }
         }
-
+            //codigo de pruebas
             Vector3 VectorResult;
             float DotResult = Vector3.Dot(transform.forward, target.forward);
             if (DotResult > 0)
@@ -64,20 +75,15 @@ namespace Kelo.AI
 
     private bool IsInRange(Transform targetTransform)
     {
-
         return Vector3.Distance(transform.position, targetTransform.position) < attackRange;
-
     }
 
     public bool CanAttack(GameObject combatTarget)
-    {
-       
+    {       
         if (combatTarget == null) { return false; }
         if (!GetComponent<AIMover>().CanMoveTo(combatTarget.transform.position)
-        && !IsInRange(combatTarget.transform)
-        )
-        {
-          
+        && !IsInRange(combatTarget.transform))
+        {          
             return false;
         }
      
@@ -88,8 +94,13 @@ namespace Kelo.AI
     private void AttackBehaviour()
     {
         transform.LookAt(target);
+        if(basicAttackBehaviour)
+        {
         target.GetComponent<Health>().TakeDamage(figtherDamage); // deberia ser con evento de animacion pero placeholders
         TriggerAttack(); //attack animation
+        }else{
+            attack.Execute(target,transform,transform.localRotation);
+        }
     }
 
     private void TriggerAttack()
@@ -99,7 +110,10 @@ namespace Kelo.AI
             Debug.LogWarning("No attack animation behaviour"+gameObject.name);
             return;
         }
+        if(!this.GetComponent<Health>().IsDead())
+        {            
             myAnim.AttackAnimationAI();
+        }
     }
 
     public void Attack(GameObject combatTarget)
@@ -113,10 +127,16 @@ namespace Kelo.AI
     {
         if (target == null) return;
         GetComponent<AIMover>().Disengage();
-        //TriggerStopAttacking();
+        TriggerStopAttacking();
         target = null;
     }
 
-}
+    private void TriggerStopAttacking()
+    {
+        myAnim.ResetTrigger("Attack");
+    }
+
+
+    }
 
 }

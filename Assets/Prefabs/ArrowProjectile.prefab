@@ -131,13 +131,16 @@ MonoBehaviour:
   ProjectileSounds:
     m_PersistentCalls:
       m_Calls: []
+  poolName: Arrows
+  tagToHit: Enemy
   speed: 35
   homing: 1
   hitEffect: {fileID: 0}
-  maxLifeTime: 3
   destroyOnHit: []
+  maxLifeTime: 3
   lifeAfterImpact: 2
   projectileDamage: 20
+  stayOnTarget: 1
 --- !u!65 &3043288304156990188
 BoxCollider:
   m_ObjectHideFlags: 0

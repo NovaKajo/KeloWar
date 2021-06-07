@@ -22,6 +22,7 @@ public class PlayerAnimatorHandler : MonoBehaviour
     private PlayerAttack playerAttack;
 
     private Vector3 movementVector;
+    private bool rollState;
 
     private int VerticalHash = Animator.StringToHash("Vertical");
 
@@ -33,16 +34,27 @@ public class PlayerAnimatorHandler : MonoBehaviour
 
     private void OnEnable() {
         pmi.Move += HandleMovement;
+        pmi.Dash += HandleDash;
     }
     private void OnDisable() {
         pmi.Move -= HandleMovement;
+        pmi.Dash -= HandleDash;
     }
 
     private void HandleMovement(Vector2 movement)
     {
-        //animator.SetFloat("Horizontal",movement.x*movementSpeed);
-        //animator.SetFloat("Vertical", movement.x != 0 ? Mathf.Abs(movement.x*movementSpeed) : Mathf.Abs(movement.y *movementSpeed));
+       
         animator.SetFloat(VerticalHash,(Mathf.Abs(movement.x)+Mathf.Abs(movement.y))*movementSpeed);
+    }
+    private void HandleDash(bool dashState)
+    {
+       
+        if(dashState == true && !animator.GetCurrentAnimatorStateInfo(1).IsName("Roll") )
+        {
+        animator.SetTrigger("Roll");
+     
+        }
+     
     }
 
 
@@ -50,36 +62,61 @@ public class PlayerAnimatorHandler : MonoBehaviour
     void Update()
     {
        
-        if(pmi._move.x == 0 && pmi._move.y == 0)
-        {
-            timeSinceStop += Time.deltaTime;            
-            if(timeSinceStop >=selectTargetTime && !changeOnMove)
+       if(pmi._isdashing == true || animator.GetCurrentAnimatorStateInfo(1).IsName("Roll"))
             {
-                EnemyList.FindClosestEnemy(this.transform);            
-             playerAttack.SetTarget(EnemyList.closestEnemyToPlayer);
-             playerAttack.readyToAttack = true;
-             changeOnMove = true;
+                ResetTarget();
+                if (pmi._move.x != 0 || pmi._move.y != 0)
+                {
+                    RotateToDirection(0.1f);
+                }
+                else if (pmi._move.x == 0 && pmi._move.y == 0)
+                {
+                    changeOnMove = false;
+                }
+                return;
             }
+            else
+            {
+            if(pmi._move.x == 0 && pmi._move.y == 0)
+            {
+                timeSinceStop += Time.deltaTime;            
+                if(timeSinceStop >=selectTargetTime && !changeOnMove)
+                    {
+                        FindNewEnemy();
+                    }
 
-            return;
-        }else{
-        playerAttack.readyToAttack = false;
-        timeSinceStop = 0;
-        playerAttack.Disengage();
-    
-        changeOnMove = false;
-       
-        movementVector = new Vector3(pmi._move.x, 0.0f, pmi._move.y);
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(movementVector), 0.15F);
-        
-      
-        }
-      
+                    return;
+            }else{
+            ResetTarget();
+            changeOnMove = false;        
+            RotateToDirection(0.15f);
+            }      
+        }        
     }
 
-   
+        private void RotateToDirection(float time)
+        {
+            movementVector = new Vector3(pmi._move.x, 0.0f, pmi._move.y);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(movementVector), time);
+        }
 
-    public void Disengage()
+        private void ResetTarget()
+        {
+            playerAttack.Disengage();
+            playerAttack.readyToAttack = false;
+            timeSinceStop = 0f;
+        }
+
+        private void FindNewEnemy()
+        {
+            EnemyList.FindClosestEnemy(this.transform);
+            playerAttack.SetTarget(EnemyList.closestEnemyToPlayer);
+            playerAttack.readyToAttack = true;
+            changeOnMove = true;
+        }
+
+
+        public void Disengage()
     {
         
     }

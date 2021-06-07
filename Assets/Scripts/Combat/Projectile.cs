@@ -12,19 +12,35 @@ namespace Kelo.Combat
 public class Projectile : MonoBehaviour
 {
     [SerializeField] UnityEvent ProjectileSounds;
+    [Header("Pools")]
+    [SerializeField] string poolName = "";
+    [SerializeField] string tagToHit = "";
+
+    [Header("Projectile Properties")]
     [SerializeField] float speed = 35f;
     [SerializeField] bool homing;
+
     [SerializeField] GameObject hitEffect = null;
-    [SerializeField] float maxLifeTime = 3f;
     [SerializeField] GameObject[] destroyOnHit = null;
+
+    [Header("Lifetime")]
+    [SerializeField] float maxLifeTime = 3f;
     [SerializeField] float lifeAfterImpact = 2f;
+
+    [Header("Damage")]
     [SerializeField] int projectileDamage = 20;
+    [SerializeField] bool stayOnTarget = false;
+
     private float speedStart;
+
     GameObject instigator;
+
     private Transform target = null;
+
     private Health targetHealth;
 
     bool doDamageOnce = false;
+    Vector3 direction;
     // Start is called before the first frame update
     void Awake()
     {   
@@ -48,52 +64,48 @@ public class Projectile : MonoBehaviour
         {
             return;
         }
-        if(!targetHealth.IsDead())
+        if(!targetHealth.IsDead() && homing)
         {
-        Vector3 dir = ((target.transform.position+Vector3.up/2) - this.transform.position).normalized;
-        transform.position += dir *Time.deltaTime * speed;
+        direction = ((target.transform.position+Vector3.up/2) - this.transform.position).normalized;
+        transform.position += direction *Time.deltaTime * speed;
+        this.transform.LookAt(GetAimLocation());
 
         }else{
+                direction = ((target.transform.position + Vector3.up / 2) - this.transform.position).normalized;
                 transform.position += transform.forward * Time.deltaTime * speed;
         }
-        if (homing && !targetHealth.IsDead())
-        {
-            this.transform.LookAt(GetAimLocation());
-            
-        }
+       
 
     }
 
-  
     public void OnSpawned()
     {
-            if(target !=null)
+            if(target !=null && homing)
+            {            
             this.transform.LookAt(GetAimLocation());
+
+            }
             this.speed = speedStart;
             doDamageOnce = false;
     }
 
     public void SetTarget(Transform newtarget, GameObject instigator)
     {
-
         target = newtarget;
         targetHealth = target.GetComponent<Health>();
         this.instigator = instigator;
-        PoolManager.Pools["Arrows"].Despawn(gameObject.transform, maxLifeTime);
-
-        }
+        PoolManager.Pools[poolName].Despawn(gameObject.transform, maxLifeTime);
+    }
 
     private Vector3 GetAimLocation()
     {       
         CapsuleCollider targetCapsule = target.GetComponent<CapsuleCollider>();
         if (targetCapsule == null)
-        {
-          
+        {          
             return target.transform.position;
         }
         else
-        {
-            
+        {            
             return target.transform.position + Vector3.up * targetCapsule.height / 2;
         }
       
@@ -107,12 +119,12 @@ public class Projectile : MonoBehaviour
             return;
         }
         
-        if (target != null && target.gameObject == other.gameObject && !other.gameObject.CompareTag("Player"))
+        if (other.CompareTag(tagToHit) && !other.gameObject != instigator)
         {
             if (targetHealth.IsDead())
             {
-                PoolManager.Pools["Arrows"].Despawn(gameObject.transform, lifeAfterImpact);                   
-                    return;
+                PoolManager.Pools[poolName].Despawn(gameObject.transform, lifeAfterImpact);                   
+                return;
             }
             if (hitEffect != null)
             {
@@ -121,18 +133,24 @@ public class Projectile : MonoBehaviour
 
             if(!doDamageOnce)
             {
-            targetHealth.TakeDamage(GetDamage());
-            doDamageOnce = true;
+                if(other.TryGetComponent(out Health helth))
+                {
+                    helth.TakeDamage(GetDamage());
+                }
+                doDamageOnce = true;
             }
-            this.transform.parent = other.transform;
+                if(stayOnTarget)
+                this.transform.parent = other.transform;
+
             speed = 0;
             ProjectileSounds.Invoke();
+
             foreach (GameObject toDestroy in destroyOnHit)
             {
                 Destroy(toDestroy);
             }
 
-            PoolManager.Pools["Arrows"].Despawn(gameObject.transform, lifeAfterImpact);
+            PoolManager.Pools[poolName].Despawn(gameObject.transform, lifeAfterImpact);
 
         }   
     }

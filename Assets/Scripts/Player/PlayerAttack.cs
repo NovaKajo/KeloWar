@@ -18,6 +18,8 @@ namespace Kelo.Player
     [SerializeField] private Transform BowGJ;
     [SerializeField] public Transform arrowInHand;
 
+    private Health playerHealth;
+
     [SerializeField] private float swordRange = 3f;
     [SerializeField] private float lookAtSpeed = 10f;
     [SerializeField] private float attackTime = 1f;
@@ -39,15 +41,19 @@ namespace Kelo.Player
     private void Start() {
         scheduler = GetComponent<Scheduler>();
         animator = GetComponentInChildren<Animator>();
+        playerHealth = GetComponent<Health>();
     }
 
     private void Update() {
-        
-        LookAtTarget();
-        if(lastTimesinceAttack>=attackTime)
+        if(!playerHealth.IsDead())
         {
-        AttackTarget();
 
+            LookAtTarget();
+            if(lastTimesinceAttack>=attackTime)
+            {
+            AttackTarget();
+
+            }
         }
         lastTimesinceAttack += Time.deltaTime;
     }

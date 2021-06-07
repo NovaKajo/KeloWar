@@ -12,8 +12,8 @@ public class KnockBackOnCollision : MonoBehaviour
 
         if( rb != null && other.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("hiting enemy");
-            Debug.Log(rb.gameObject.name);
+          //  Debug.Log("hiting enemy");
+//            Debug.Log(rb.gameObject.name);
             Vector3 dir = (other.transform.position - this.transform.position);
             dir.y = 0;
             rb.AddForce(dir.normalized*knockBackPower,ForceMode.Impulse);

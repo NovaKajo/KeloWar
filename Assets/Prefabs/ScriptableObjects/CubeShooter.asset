@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45029009550c3344bbf9ac8ae64fc155, type: 3}
+  m_Name: CubeShooter
+  m_EditorClassIdentifier: 
+  projectilePrefabu: {fileID: 8831122762870593635, guid: 724a1b7325cfb5047abfb289110c9fc9, type: 3}

@@ -51,4 +51,9 @@ public class BatAnimationBehaviour : AIAnimator
     {
         
     }
+
+    public override void ResetTrigger(string animationName)
+    {
+        myAnim.ResetTrigger(animationName);
+    }
 }

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -4855295930511385025}
   - component: {fileID: -7556188039515517867}
   - component: {fileID: 5206309493863468177}
-  - component: {fileID: 6370565261768559891}
+  - component: {fileID: 3955411027574149675}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -162,6 +162,7 @@ MonoBehaviour:
   pmi: {fileID: -1435298009995368045}
   animator: {fileID: 0}
   movementSpeed: 2
+  selectTargetTime: 0.2
 --- !u!114 &-4855295930511385025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,6 +176,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  takeDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  Death:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &-7556188039515517867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,7 +194,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7dcbe854a0c184190b772251ae66f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gos: []
+  targetVFX: {fileID: 0}
+  SwordGJ: {fileID: 0}
+  BowGJ: {fileID: 0}
+  arrowInHand: {fileID: 0}
+  swordRange: 3
+  lookAtSpeed: 10
+  attackTime: 1
+  readyToAttack: 0
 --- !u!54 &5206309493863468177
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -204,16 +218,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!65 &6370565261768559891
-BoxCollider:
+--- !u!136 &3955411027574149675
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1768912135840952586}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 7eec9a376a652c541981469fe0a73a98, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1.69, z: 1}
-  m_Center: {x: 0, y: 0.83, z: 0}
+  m_Radius: 0.5
+  m_Height: 2.09
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.77, z: 0}
