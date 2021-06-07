@@ -81,12 +81,12 @@ public class AIController : MonoBehaviour
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
         if (timeSinceLastaggravatedTime < aggroCooldown)
         {
-            Debug.Log("cd ran out");
+            //Debug.Log("cd ran out");
             return true;
         }
         if (distanceToPlayer < chaseRange)
         {
-          Debug.Log("player is close chasing");
+          //Debug.Log("player is close chasing");
             Aggro();
             return true;
         }

@@ -28,7 +28,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4672236824477970746}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.5}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_Children:
   - {fileID: 2907088772239343544}
@@ -38,7 +38,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 2}
+  m_AnchoredPosition: {x: 0, y: 1.2}
   m_SizeDelta: {x: 100, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &2999533711094940651
@@ -116,8 +116,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foregroundImage: {fileID: 2214705392421136035}
   backgroundImage: {fileID: 2012773910925743119}
+  updateSpeedSeconds: 0.3
   health: {fileID: -5981686857204753107}
   camera: {fileID: 0}
+  isUIBar: 0
 --- !u!1 &5090054834678258929
 GameObject:
   m_ObjectHideFlags: 0
@@ -136,6 +138,7 @@ GameObject:
   - component: {fileID: 1626472606106068775}
   - component: {fileID: 5043616036905467790}
   - component: {fileID: -2144818580789387547}
+  - component: {fileID: 6141791259535793000}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -201,6 +204,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  takeDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  Death:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &2120725627508029606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,11 +222,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ad2240ec358dee499908865d4ef91fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chaseRange: 5
+  chaseRange: 3
   aggroCooldown: 10
   health: {fileID: -5981686857204753107}
   mover: {fileID: 9118481997870891363}
-  patrolSpeedfraction: 0.25
+  patrolSpeedfraction: 0.5
 --- !u!114 &9118481997870891363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,6 +256,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackRange: 2.5
   TimeBetweenAttacks: 1
+  figtherDamage: 5
+  target: {fileID: 0}
 --- !u!114 &1626472606106068775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,9 +302,21 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: 0
+  m_BaseOffset: 0.6
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &6141791259535793000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5090054834678258929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc1be6098a9463f4a9314a0fe301cd03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5952818657491281149
 GameObject:
   m_ObjectHideFlags: 0

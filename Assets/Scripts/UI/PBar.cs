@@ -9,13 +9,13 @@ public class PBar
     private MonoBehaviour bar;
     private Image barforegroundImage;
 
-    [SerializeField]
-    private float updateSpeedSeconds = 0.3f;
+    private float updateSpeedSeconds;
 
-    public PBar(MonoBehaviour bar, Image foregroundImage)
+    public PBar(MonoBehaviour bar, Image foregroundImage,float updateSpeed)
     {
         this.bar = bar;
         barforegroundImage = foregroundImage;
+        updateSpeedSeconds = updateSpeed;
     }
 
     public void HandleChange(float pct)

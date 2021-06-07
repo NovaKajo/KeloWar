@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Kelo.Stats;
+using PathologicalGames;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,19 +12,32 @@ namespace Kelo.Combat
 public class Projectile : MonoBehaviour
 {
     [SerializeField] UnityEvent ProjectileSounds;
-    [SerializeField] float speed = 5f;
+    [SerializeField] float speed = 35f;
     [SerializeField] bool homing;
     [SerializeField] GameObject hitEffect = null;
     [SerializeField] float maxLifeTime = 3f;
     [SerializeField] GameObject[] destroyOnHit = null;
-    [SerializeField] float lifeAfeterImpact = 2f;
+    [SerializeField] float lifeAfterImpact = 2f;
+    [SerializeField] int projectileDamage = 20;
+    private float speedStart;
     GameObject instigator;
-    Transform target = null;
-    int damage = 0;
+    private Transform target = null;
+    private Health targetHealth;
+
+    bool doDamageOnce = false;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
+    {   
+        speedStart = speed;
+    }
+    public int GetDamage()
     {
-        this.transform.LookAt(GetAimLocation());
+        return projectileDamage;
+    }
+
+    public int addDamage(int addedDmg)
+    {
+        return projectileDamage+addedDmg;
     }
 
     // Update is called once per frame
@@ -34,10 +48,15 @@ public class Projectile : MonoBehaviour
         {
             return;
         }
+        if(!targetHealth.IsDead())
+        {
+        Vector3 dir = ((target.transform.position+Vector3.up/2) - this.transform.position).normalized;
+        transform.position += dir *Time.deltaTime * speed;
 
-
-        this.transform.Translate(Vector3.forward * speed * Time.deltaTime);
-        if (homing && !target.GetComponent<Health>().IsDead())
+        }else{
+                transform.position += transform.forward * Time.deltaTime * speed;
+        }
+        if (homing && !targetHealth.IsDead())
         {
             this.transform.LookAt(GetAimLocation());
             
@@ -45,15 +64,24 @@ public class Projectile : MonoBehaviour
 
     }
 
-    public void SetTarget(Transform newtarget, int damage, GameObject instigator)
+  
+    public void OnSpawned()
+    {
+            if(target !=null)
+            this.transform.LookAt(GetAimLocation());
+            this.speed = speedStart;
+            doDamageOnce = false;
+    }
+
+    public void SetTarget(Transform newtarget, GameObject instigator)
     {
 
         target = newtarget;
-        this.damage += damage;
+        targetHealth = target.GetComponent<Health>();
         this.instigator = instigator;
+        PoolManager.Pools["Arrows"].Despawn(gameObject.transform, maxLifeTime);
 
-        Destroy(gameObject, maxLifeTime);
-    }
+        }
 
     private Vector3 GetAimLocation()
     {       
@@ -73,20 +101,29 @@ public class Projectile : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-
-        if (target != null && !other.gameObject.CompareTag("Player"))
+        if(other.CompareTag("Wall"))
         {
-            if (target.GetComponent<Health>().IsDead())
+            speed = 0;
+            return;
+        }
+        
+        if (target != null && target.gameObject == other.gameObject && !other.gameObject.CompareTag("Player"))
+        {
+            if (targetHealth.IsDead())
             {
-                Destroy(gameObject, 2f);
-                return;
+                PoolManager.Pools["Arrows"].Despawn(gameObject.transform, lifeAfterImpact);                   
+                    return;
             }
             if (hitEffect != null)
             {
                 Instantiate(hitEffect, GetAimLocation(), transform.rotation);
             }
 
-            target.GetComponent<Health>().TakeDamage(damage);
+            if(!doDamageOnce)
+            {
+            targetHealth.TakeDamage(GetDamage());
+            doDamageOnce = true;
+            }
             this.transform.parent = other.transform;
             speed = 0;
             ProjectileSounds.Invoke();
@@ -95,15 +132,11 @@ public class Projectile : MonoBehaviour
                 Destroy(toDestroy);
             }
 
-            Destroy(gameObject, lifeAfeterImpact);
+            PoolManager.Pools["Arrows"].Despawn(gameObject.transform, lifeAfterImpact);
 
-        }
+        }   
     }
 
-    private void OnCollisionEnter(Collision other) {
 
-        if(!other.gameObject.CompareTag("Player"))
-    speed = 0;    
-    }
 }
 }

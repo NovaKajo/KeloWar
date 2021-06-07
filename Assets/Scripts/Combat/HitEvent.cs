@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Kelo.Player;
+using PathologicalGames;
 using UnityEngine;
 
 namespace Kelo.Combat
@@ -9,7 +10,7 @@ namespace Kelo.Combat
     public class HitEvent : MonoBehaviour
 {
     PlayerAttack playerAttack;
-    public Projectile arrowPrefab;
+    public Transform arrowPrefab;
  
 
     private void Start() {
@@ -23,13 +24,14 @@ namespace Kelo.Combat
 
    void Arrow()
    {
-       if(playerAttack.targetGJ == null)
+       if(playerAttack.GetTarget() == null)
        {
            return;
        }
       playerAttack.arrowInHand.gameObject.SetActive(false);
-      Projectile porjectileInstance = Instantiate(arrowPrefab,playerAttack.arrowInHand.transform.position,Quaternion.identity);
-      porjectileInstance.SetTarget(playerAttack.targetGJ.transform,-5,this.gameObject);
+      Transform porjectileInstance = PoolManager.Pools["Arrows"].Spawn(arrowPrefab,playerAttack.arrowInHand.transform.position,Quaternion.identity);
+   
+      porjectileInstance.GetComponent<Projectile>().SetTarget(playerAttack.GetTarget().transform,this.gameObject);
         
    }
 }

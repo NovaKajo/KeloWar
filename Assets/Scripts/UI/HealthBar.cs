@@ -13,16 +13,26 @@ public class HealthBar : MonoBehaviour
     private Image backgroundImage;
 
     [SerializeField]
-    private Health health;
+    [Range(0, 1)]
+    private float updateSpeedSeconds = 0.3f;
 
+    [SerializeField]
+    private Health health;
     public Transform camera;
+
+    public bool isUIBar = false;
+
+
+    
 
     PBar healthBar;
     // Start is called before the first frame update
     void Start()
     {
+        if(!isUIBar){
         camera = Camera.main.transform;
-        healthBar = new PBar(this,foregroundImage);
+        }
+        healthBar = new PBar(this,foregroundImage,updateSpeedSeconds);
         health.OnHealthPctChanged += HandlePctChanged;
     }
 
@@ -33,10 +43,10 @@ public class HealthBar : MonoBehaviour
 
     void LateUpdate()
     {
-     
-        transform.LookAt(transform.position + camera.position);
-            
-        
+        if(isUIBar)
+        return;
+        transform.LookAt(transform.position + camera.transform.rotation * Vector3.forward,
+               camera.transform.rotation * Vector3.up);
         
     }
 }

@@ -10,7 +10,8 @@ namespace Kelo.Player
 
     public class PlayerAttack : MonoBehaviour,IAction
 {
-    public GameObject targetGJ;
+    [Header("TargetVFX")]
+    public Transform targetVFX;
 
     [Header("Weapons")]
     [SerializeField] private Transform SwordGJ;
@@ -25,7 +26,11 @@ namespace Kelo.Player
     private Animator animator;
     Scheduler scheduler;
 
-    public List<GameObject> gos; 
+    private Enemy targetEnemy;
+    
+    private Health targetHealth;
+
+    public bool readyToAttack = false;
     
     private void Start() {
         scheduler = GetComponent<Scheduler>();
@@ -43,38 +48,16 @@ namespace Kelo.Player
         lastTimesinceAttack += Time.deltaTime;
     }
 
-    public void FindClosestEnemy()
-    {
-       
-        float distance = Mathf.Infinity;
-        Vector3 position = transform.position;
-        foreach (GameObject go in gos)
-        {
-            if(go.activeSelf == false)
-            {
-               continue;
-            }
-            Vector3 diff = go.transform.position - position;
-            float curDistance = diff.sqrMagnitude;
-            if (curDistance < distance)
-            {
-                targetGJ = go;
-                distance = curDistance;
-            }
-           
-        }
-    }
-
     public void LookAtTarget()
     {
         
-        if (targetGJ == null)
+        if (targetEnemy == null || targetHealth.IsDead())
         {
             return;
         }
 
         // Smoothly rotate towards the target point.
-        var targetRotation = Quaternion.LookRotation(targetGJ.transform.position - transform.position);
+        var targetRotation = Quaternion.LookRotation(targetEnemy.transform.position - transform.position);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, lookAtSpeed * Time.deltaTime);
        
     }
@@ -83,20 +66,28 @@ namespace Kelo.Player
     {
         
 
-        if (targetGJ == null)
-        {
-            Debug.Log("no target.." );
+        if (targetEnemy == null || targetHealth.IsDead())
+        {        
+            if(targetHealth != null)
+            {
+                    EnemyList.FindClosestEnemy(this.transform);
+                    SetTarget(EnemyList.closestEnemyToPlayer);
+            }
             return;
         }
-        scheduler.StartAction(this);
+        if(!readyToAttack)
+        {
+            return;
+        }
         
-        if (Vector3.Distance(targetGJ.transform.position, this.transform.position) < swordRange)
+        
+        if (Vector3.Distance(targetEnemy.transform.position, this.transform.position) < swordRange)
         {
             HandleSwordAttack();
         }
         else
         {
-            Debug.Log("attack with bow");
+            //Debug.Log("attack with bow");
             HandleBowAttack();
         }
         lastTimesinceAttack = 0;
@@ -113,18 +104,42 @@ namespace Kelo.Player
     private void HandleSwordAttack()
     {
         BowGJ.gameObject.SetActive(false);
+        arrowInHand.gameObject.SetActive(false);
         SwordGJ.gameObject.SetActive(true);
         animator.SetTrigger("Attack1");
     }
 
     public void DamageTarget()
     {
-      targetGJ.GetComponent<Health>().TakeDamage(-5);
+        if(targetEnemy == null)
+        {
+            Debug.Log("no target");
+            return;
+        }
+      targetEnemy.GetComponent<Health>().TakeDamage(30);
     }
 
     public void Disengage()
     {
-        targetGJ = null;
+        targetVFX.gameObject.SetActive(false);
+        targetEnemy = null;
+    }
+
+    public void SetTarget(Enemy targetToHit)
+    {
+       
+        targetEnemy = targetToHit;
+        targetHealth = targetToHit.GetComponent<Health>();    
+        if(targetHealth.IsDead())   
+        return;
+        targetVFX.transform.position = targetEnemy.transform.position+Vector3.up/8;
+        targetVFX.gameObject.SetActive(true);
+    }
+
+    public Enemy GetTarget()
+    {
+      
+        return targetEnemy;
     }
 }
 

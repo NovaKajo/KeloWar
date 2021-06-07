@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Kelo.Core{
 
@@ -9,13 +10,15 @@ public class ApplicationController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Application.targetFrameRate = 144;
+        Application.targetFrameRate = 60;
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+       
+        
+          
+            
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
+   
 }
 }

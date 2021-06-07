@@ -13,8 +13,9 @@ namespace Kelo.AI
     float timeSinceLastAttack = Mathf.Infinity;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] float TimeBetweenAttacks = 1f;
+    [SerializeField] int figtherDamage = 5;
 
-    Transform target;
+    [SerializeField]Transform target;
 
     //[SerializeField] private Health health;
 
@@ -39,7 +40,7 @@ namespace Kelo.AI
             if (timeSinceLastAttack >= TimeBetweenAttacks)
             {
                 //Triggers Hit() animation dmg
-                Debug.Log("attacking");
+               // Debug.Log("attacking");
                 AttackBehaviour();
                 timeSinceLastAttack = 0;
             }
@@ -73,7 +74,7 @@ namespace Kelo.AI
     private void AttackBehaviour()
     {
         transform.LookAt(target);
-        
+        target.GetComponent<Health>().TakeDamage(figtherDamage); // deberia ser con evento de animacion pero placeholders
         //TriggerAttack(); needs animator
     }
 
