@@ -24,6 +24,10 @@ namespace Kelo.Player
     private float lastTimesinceAttack = Mathf.Infinity;
 
     private Animator animator;
+
+    private int attackHash = Animator.StringToHash("Attack1");
+    private int bowHash = Animator.StringToHash("Bow");
+
     Scheduler scheduler;
 
     private Enemy targetEnemy;
@@ -97,8 +101,8 @@ namespace Kelo.Player
     {
         arrowInHand.gameObject.SetActive(true);
         SwordGJ.gameObject.SetActive(false);
-        BowGJ.gameObject.SetActive(true);
-        animator.SetTrigger("Bow");
+        BowGJ.gameObject.SetActive(true);     
+        animator.SetTrigger(bowHash);
     }
 
     private void HandleSwordAttack()
@@ -106,7 +110,7 @@ namespace Kelo.Player
         BowGJ.gameObject.SetActive(false);
         arrowInHand.gameObject.SetActive(false);
         SwordGJ.gameObject.SetActive(true);
-        animator.SetTrigger("Attack1");
+        animator.SetTrigger(attackHash);
     }
 
     public void DamageTarget()
@@ -127,13 +131,17 @@ namespace Kelo.Player
 
     public void SetTarget(Enemy targetToHit)
     {
-       
+        if(targetToHit != null)
+        {
+
         targetEnemy = targetToHit;
         targetHealth = targetToHit.GetComponent<Health>();    
         if(targetHealth.IsDead())   
         return;
         targetVFX.transform.position = targetEnemy.transform.position+Vector3.up/8;
+        targetVFX.transform.parent = targetEnemy.transform;
         targetVFX.gameObject.SetActive(true);
+        }
     }
 
     public Enemy GetTarget()

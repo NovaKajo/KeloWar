@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using Kelo.Core;
+using Kelo.Stats;
 using UnityEngine;
 using UnityEngine.AI;
+
 
 namespace Kelo.AI
 {
@@ -10,43 +12,58 @@ namespace Kelo.AI
     public class AIMover : MonoBehaviour,IAction
 {
     [SerializeField] float maxSpeed = 5f;
-    [SerializeField] Animator myAnim;
 
     [SerializeField] private float stopDistance = 3f;
     NavMeshAgent navMesh;
+    private Health health;
+
+    private Vector3 navVelocity;
+    private Vector3 localVelocity;
+    private float forwardSpeed;
+
+
+    private Scheduler scheduler;
     // Start is called before the first frame update
     void Awake()
     {
-        
+         scheduler = GetComponent<Scheduler>();
          navMesh = GetComponent<NavMeshAgent>();   
+         health = GetComponent<Health>();
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        Animator();
-
+        if(health.IsDead())
+        {
+            return;
+        }
+        CalculateForwardSpeed();
+        
     }
 
-    private void Animator()
+    private void CalculateForwardSpeed()
     {
-        Vector3 velocity = navMesh.velocity;
-        Vector3 localVelocity = transform.InverseTransformDirection(velocity);
-        float speed = localVelocity.z;
-        //myAnim.SetFloat("forwardSpeed", speed);
+        navVelocity = navMesh.velocity; 
+        localVelocity = transform.InverseTransformDirection(navVelocity);
+        forwardSpeed = localVelocity.z; 
+    }
+
+    public float GetForwardSpeed()
+    {
+        return forwardSpeed;
     }
 
     public void StartMoveAction(Vector3 destination, float speedFraction)
     {
-        GetComponent<Scheduler>().StartAction(this);
+        scheduler.StartAction(this);
         navMesh.speed = maxSpeed * Mathf.Clamp01(speedFraction);
         MoveTo(destination, speedFraction);
     }
 
     public void Disengage()
     {
-
+       
         navMesh.isStopped = true;
     }
 

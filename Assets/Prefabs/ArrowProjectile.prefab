@@ -136,7 +136,7 @@ MonoBehaviour:
   hitEffect: {fileID: 0}
   maxLifeTime: 3
   destroyOnHit: []
-  lifeAfeterImpact: 2
+  lifeAfterImpact: 2
   projectileDamage: 20
 --- !u!65 &3043288304156990188
 BoxCollider:
@@ -163,7 +163,7 @@ Rigidbody:
   m_Drag: 1
   m_AngularDrag: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2

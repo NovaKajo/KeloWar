@@ -99,7 +99,7 @@ public class Projectile : MonoBehaviour
       
 
     }
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)  //Cambiar a cualquier enemigo que choque
     {
         if(other.CompareTag("Wall"))
         {

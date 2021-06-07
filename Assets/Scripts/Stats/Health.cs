@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Kelo.Combat;
+using Kelo.AI;
 using Kelo.Core;
 using UnityEngine;
 using UnityEngine.Events;
@@ -25,12 +25,20 @@ namespace Kelo.Stats
         public Action<float> OnHealthPctChanged = delegate { };
         bool isDead = false;
 
-        private void Start()
+        private void Awake()
         {
             currentHealth = maxHealth;
 
         }
 
+        public int GetCurrentHealth()
+        {
+            return currentHealth;
+        }
+        public int GetMaxHealth()
+        {
+            return maxHealth;
+        }
         public bool IsDead()
         {
             return isDead;
@@ -47,6 +55,10 @@ namespace Kelo.Stats
             else
             {
                 ModifyHealth(damagevalue);
+                if (GetComponent<AIAnimator>())
+                {
+                    GetComponent<AIAnimator>().GetHit(0); // debe haber alguna funcion matematica para ver de donde viene el golpe
+                }
 
             }
         }
@@ -57,15 +69,27 @@ namespace Kelo.Stats
             isDead = true;
             if(this.gameObject.CompareTag("Enemy"))
             {
-               this.gameObject.GetComponent<Enemy>().RemoveFromList();
+                this.gameObject.GetComponent<Enemy>().RemoveFromList();
+                DeathAnimationAI();
             }
-            //myAnim.SetTrigger("isAlive");
 
             GetComponent<Scheduler>().CancelCurrentAction();
-            
-            gameObject.SetActive(false);
+            GetComponent<CapsuleCollider>().enabled = false;
+            GetComponent<Rigidbody>().isKinematic = true;
         }
-        
+
+        private void DeathAnimationAI()
+        {
+            if (GetComponent<AIAnimator>())
+            {
+                GetComponent<AIAnimator>().Die(false);
+            }
+            else
+            {
+                Debug.LogWarning("No animation death behaviour");
+            }
+        }
+
         public void ModifyHealth(int amount)
         {
            

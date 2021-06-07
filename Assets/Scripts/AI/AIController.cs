@@ -10,7 +10,6 @@ namespace Kelo.AI
 public class AIController : MonoBehaviour
 {
     [SerializeField] float chaseRange = 5f;
-
     [SerializeField] float aggroCooldown = 10f;
 
     [SerializeField] Health health;
@@ -23,8 +22,6 @@ public class AIController : MonoBehaviour
 
     private Vector3 guardPosition;
     [SerializeField] float patrolSpeedfraction = 0.25f;
-    
-
 
     void Start()
     {
@@ -39,7 +36,8 @@ public class AIController : MonoBehaviour
         if (IsAggravated() && fighter.CanAttack(player))
         {
 
-            timeSinceLastSeenPlayer = 0;           
+            timeSinceLastSeenPlayer = 0;  
+                    
             AttackBehaviour();
         }
         else
@@ -79,15 +77,15 @@ public class AIController : MonoBehaviour
     private bool IsAggravated()
     {
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-        if (timeSinceLastaggravatedTime < aggroCooldown)
-        {
-            //Debug.Log("cd ran out");
-            return true;
-        }
         if (distanceToPlayer < chaseRange)
         {
           //Debug.Log("player is close chasing");
             Aggro();
+            return true;
+        }
+        if (timeSinceLastaggravatedTime < aggroCooldown)
+        {
+            //Debug.Log("cd ran out");
             return true;
         }
         return false;
@@ -101,7 +99,7 @@ public class AIController : MonoBehaviour
     private void AttackBehaviour()
     {
         fighter.Attack(player);
-        
+       
     }
     public float getRange()
     {

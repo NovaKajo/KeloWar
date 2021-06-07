@@ -23,6 +23,8 @@ public class PlayerAnimatorHandler : MonoBehaviour
 
     private Vector3 movementVector;
 
+    private int VerticalHash = Animator.StringToHash("Vertical");
+
     private void Start() {
             
        scheduler = GetComponent<Scheduler>();
@@ -40,7 +42,7 @@ public class PlayerAnimatorHandler : MonoBehaviour
     {
         //animator.SetFloat("Horizontal",movement.x*movementSpeed);
         //animator.SetFloat("Vertical", movement.x != 0 ? Mathf.Abs(movement.x*movementSpeed) : Mathf.Abs(movement.y *movementSpeed));
-        animator.SetFloat("Vertical",(Mathf.Abs(movement.x)+Mathf.Abs(movement.y))*movementSpeed);
+        animator.SetFloat(VerticalHash,(Mathf.Abs(movement.x)+Mathf.Abs(movement.y))*movementSpeed);
     }
 
 

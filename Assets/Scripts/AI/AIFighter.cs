@@ -9,7 +9,7 @@ namespace Kelo.AI
 
     public class AIFighter : MonoBehaviour,IAction
 {
-    Animator myAnim;
+    AIAnimator myAnim;
     float timeSinceLastAttack = Mathf.Infinity;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] float TimeBetweenAttacks = 1f;
@@ -17,12 +17,15 @@ namespace Kelo.AI
 
     [SerializeField]Transform target;
 
+    private AIMover AImover;
+
     //[SerializeField] private Health health;
 
     private void Awake()
     {
-        if(GetComponent<Animator>())
-        myAnim = GetComponent<Animator>();
+        if(GetComponent<AIAnimator>())
+        myAnim = GetComponent<AIAnimator>();
+        AImover = GetComponent<AIMover>();
     }
 
     private void Update()
@@ -32,11 +35,11 @@ namespace Kelo.AI
         if (target == null) return;
         if (target.GetComponentInParent<Health>().IsDead()) return;
 
-        GetComponent<AIMover>().MoveTo(target.position, 1f);
+        AImover.MoveTo(target.position, 1f);
         if (IsInRange(target.transform))
         {
 
-            GetComponent<AIMover>().Disengage();
+            AImover.Disengage();
             if (timeSinceLastAttack >= TimeBetweenAttacks)
             {
                 //Triggers Hit() animation dmg
@@ -46,6 +49,17 @@ namespace Kelo.AI
             }
         }
 
+            Vector3 VectorResult;
+            float DotResult = Vector3.Dot(transform.forward, target.forward);
+            if (DotResult > 0)
+            {
+                VectorResult = transform.forward + target.forward;
+            }
+            else
+            {
+                VectorResult = transform.forward - target.forward;
+            }
+            Debug.DrawRay(transform.position, VectorResult * 100, Color.green);
     }
 
     private bool IsInRange(Transform targetTransform)
@@ -75,13 +89,17 @@ namespace Kelo.AI
     {
         transform.LookAt(target);
         target.GetComponent<Health>().TakeDamage(figtherDamage); // deberia ser con evento de animacion pero placeholders
-        //TriggerAttack(); needs animator
+        TriggerAttack(); //attack animation
     }
 
     private void TriggerAttack()
     {
-        myAnim.ResetTrigger("stopAttacking");
-        myAnim.SetTrigger("Attack");
+        if(myAnim == null)
+        {
+            Debug.LogWarning("No attack animation behaviour"+gameObject.name);
+            return;
+        }
+            myAnim.AttackAnimationAI();
     }
 
     public void Attack(GameObject combatTarget)

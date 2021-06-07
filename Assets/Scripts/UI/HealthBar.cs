@@ -22,9 +22,6 @@ public class HealthBar : MonoBehaviour
 
     public bool isUIBar = false;
 
-
-    
-
     PBar healthBar;
     // Start is called before the first frame update
     void Start()
@@ -34,17 +31,33 @@ public class HealthBar : MonoBehaviour
         }
         healthBar = new PBar(this,foregroundImage,updateSpeedSeconds);
         health.OnHealthPctChanged += HandlePctChanged;
+        if(health.GetCurrentHealth() != health.GetMaxHealth())
+        {
+            foregroundImage.enabled = true;
+            backgroundImage.enabled = true;
+        }
     }
 
     private void HandlePctChanged(float currentHealthPct)
     {
         healthBar.HandleChange(currentHealthPct);
+        if(!foregroundImage.enabled && !backgroundImage.enabled)
+        {
+        foregroundImage.enabled = true;
+        backgroundImage.enabled = true;
+
+        }
     }
 
     void LateUpdate()
     {
         if(isUIBar)
         return;
+        if(health.IsDead())
+        {
+            this.gameObject.SetActive(false);
+            return;
+        }
         transform.LookAt(transform.position + camera.transform.rotation * Vector3.forward,
                camera.transform.rotation * Vector3.up);
         
