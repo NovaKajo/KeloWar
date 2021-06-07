@@ -92,7 +92,7 @@ public class PlayerMovementInput : MonoBehaviour
             _isdashing = true;
             if (_move.x == 0 && _move.y == 0)
             {
-                _dashTime += 0.05f;
+                //_dashTime += 0.05f;
             }
             
             

@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Kelo.AI;
 using Kelo.Core;
+using Kelo.Enemies;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -70,6 +69,7 @@ namespace Kelo.Stats
             if(this.gameObject.CompareTag("Enemy"))
             {
                 this.gameObject.GetComponent<Enemy>().RemoveFromList();
+                this.gameObject.GetComponent<AIFighter>().Disengage();
                 DeathAnimationAI();
             }
 

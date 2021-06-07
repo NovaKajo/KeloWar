@@ -1,5 +1,7 @@
-using Kelo.AI;
 using UnityEngine;
+
+namespace Kelo.AI{
+
 
 public class MummyAnimationBehaviour : AIAnimator  //esta clase depende unicamente del animador y mover para rescatar valores de velocidad en navmesh, si no estan seteados vas a tener problemas 
 {
@@ -9,15 +11,12 @@ public class MummyAnimationBehaviour : AIAnimator  //esta clase depende unicamen
     private int forwardSpeedHash = Animator.StringToHash("forwardSpeed");
     private int isAliveHash = Animator.StringToHash("isAlive");
     
-
     // Start is called before the first frame update
     void Awake()
     {
         Init();
         mover = GetComponent<AIMover>();
     }
-
- 
 
     private void Update() {
         if(!myAnim.GetBool(isAliveHash))
@@ -91,4 +90,6 @@ public class MummyAnimationBehaviour : AIAnimator  //esta clase depende unicamen
     {
         myAnim.ResetTrigger(animationName);
     }
+}
+
 }

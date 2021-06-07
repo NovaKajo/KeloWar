@@ -5,6 +5,8 @@ using Kelo.Combat;
 using PathologicalGames;
 using UnityEngine;
 
+namespace Kelo.Combat{
+
 [CreateAssetMenu(menuName = "Attacks/Shoot3")]
 public class Shoot3ProjectilesCone : AttackBehaviour
 {
@@ -24,4 +26,6 @@ public class Shoot3ProjectilesCone : AttackBehaviour
     {
         Shoot3ProjectilesCones(target, spawnPosition,rotation);
     }
+}
+
 }

@@ -5,7 +5,6 @@ using Kelo.Stats;
 using UnityEngine;
 using UnityEngine.AI;
 
-
 namespace Kelo.AI
 {
 
@@ -61,14 +60,34 @@ namespace Kelo.AI
         MoveTo(destination, speedFraction);
     }
 
-    public void Disengage()
+
+    private Vector3 RandomNavSphere(Vector3 origin, float dist)
     {
-       
+        Vector3 randDirection = Random.insideUnitSphere * dist;
+
+        randDirection += origin;
+
+        NavMeshHit navHit;
+
+        NavMesh.SamplePosition(randDirection, out navHit, dist, -1);
+
+        return navHit.position;
+    }
+
+    public void Disengage()
+    {       
         navMesh.isStopped = true;
+    }
+
+    public void MoveToRandomDestinationInWayPoint(float distance,float speedFraction)
+    {
+        Debug.Log("meme: "+ RandomNavSphere(transform.position, distance));        
+       MoveTo(RandomNavSphere(transform.position,distance),speedFraction);
     }
 
     public void MoveTo(Vector3 destination, float speedFraction)
     {
+        if (health.IsDead()) return;
         navMesh.speed = maxSpeed * Mathf.Clamp01(speedFraction);
         navMesh.isStopped = false;
         navMesh.SetDestination(destination);
@@ -78,6 +97,7 @@ namespace Kelo.AI
 
     public bool CanMoveTo(Vector3 target)
     {
+        if (health.IsDead()) return false;        
         NavMeshPath path = new NavMeshPath();
         bool hasPath = NavMesh.CalculatePath(transform.position, target, NavMesh.AllAreas, path);
         if (!hasPath) return false;

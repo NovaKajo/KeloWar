@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Kelo.Core;
+using Kelo.Enemies;
 using UnityEngine;
 
 namespace Kelo.Player
@@ -49,7 +50,7 @@ public class PlayerAnimatorHandler : MonoBehaviour
     private void HandleDash(bool dashState)
     {
        
-        if(dashState == true && !animator.GetCurrentAnimatorStateInfo(1).IsName("Roll") )
+        if(dashState == true && !animator.GetCurrentAnimatorStateInfo(2).IsName("Roll") )
         {
         animator.SetTrigger("Roll");
      
@@ -103,15 +104,16 @@ public class PlayerAnimatorHandler : MonoBehaviour
         private void ResetTarget()
         {
             playerAttack.Disengage();
-            playerAttack.readyToAttack = false;
+            playerAttack.canAttack = false;
             timeSinceStop = 0f;
         }
 
+        //probablemente esto no va aqui
         private void FindNewEnemy()
         {
             EnemyList.FindClosestEnemy(this.transform);
             playerAttack.SetTarget(EnemyList.closestEnemyToPlayer);
-            playerAttack.readyToAttack = true;
+            playerAttack.canAttack = true;
             changeOnMove = true;
         }
 

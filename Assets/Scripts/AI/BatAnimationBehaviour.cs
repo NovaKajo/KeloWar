@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Kelo.AI;
 using UnityEngine;
+
+namespace Kelo.AI{
 
 public class BatAnimationBehaviour : AIAnimator
 {
@@ -56,4 +57,6 @@ public class BatAnimationBehaviour : AIAnimator
     {
         myAnim.ResetTrigger(animationName);
     }
+}
+
 }

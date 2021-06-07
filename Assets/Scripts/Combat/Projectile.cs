@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Kelo.AI;
 using Kelo.Stats;
 using PathologicalGames;
 using UnityEngine;
@@ -7,7 +8,6 @@ using UnityEngine.Events;
 
 namespace Kelo.Combat
 {
-
 
 public class Projectile : MonoBehaviour
 {
@@ -18,6 +18,7 @@ public class Projectile : MonoBehaviour
 
     [Header("Projectile Properties")]
     [SerializeField] float speed = 35f;
+    [SerializeField] bool normalMovement = true;
     [SerializeField] bool homing;
 
     [SerializeField] GameObject hitEffect = null;
@@ -30,6 +31,7 @@ public class Projectile : MonoBehaviour
     [Header("Damage")]
     [SerializeField] int projectileDamage = 20;
     [SerializeField] bool stayOnTarget = false;
+    
 
     private float speedStart;
 
@@ -40,15 +42,23 @@ public class Projectile : MonoBehaviour
     private Health targetHealth;
 
     bool doDamageOnce = false;
+    
+    private Collider collider;
     Vector3 direction;
     // Start is called before the first frame update
     void Awake()
     {   
         speedStart = speed;
+        collider = GetComponent<Collider>();
     }
     public int GetDamage()
     {
         return projectileDamage;
+    }
+    public GameObject getInstigator()
+    {
+        return instigator;
+
     }
 
     public int addDamage(int addedDmg)
@@ -61,6 +71,10 @@ public class Projectile : MonoBehaviour
     {
 
         if (target == null)
+        {
+            return;
+        }
+        if(!normalMovement)
         {
             return;
         }
@@ -84,9 +98,18 @@ public class Projectile : MonoBehaviour
             {            
             this.transform.LookAt(GetAimLocation());
 
-            }
+            }           
+            collider.enabled = true;
             this.speed = speedStart;
             doDamageOnce = false;
+    }
+
+    public void OnDespawned()
+    {
+            if (instigator.TryGetComponent(out AIFighter fighter))
+            {
+                fighter.SetWeaponReclaim(true);
+            }
     }
 
     public void SetTarget(Transform newtarget, GameObject instigator)
@@ -113,14 +136,18 @@ public class Projectile : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)  //Cambiar a cualquier enemigo que choque
     {
+        //Debug.Log("CONTACT: "+other.gameObject.name);
         if(other.CompareTag("Wall"))
         {
             speed = 0;
+            target = null;
+            GetComponent<BoxCollider>().enabled = false;
             return;
         }
         
-        if (other.CompareTag(tagToHit) && !other.gameObject != instigator)
+        if (other.CompareTag(tagToHit) && other.gameObject != instigator)
         {
+            //Debug.Log("Other: "+other.gameObject.name +" Instigator: "+instigator.name);
             if (targetHealth.IsDead())
             {
                 PoolManager.Pools[poolName].Despawn(gameObject.transform, lifeAfterImpact);                   

@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using Kelo.Stats;
 using UnityEngine;
+
+namespace Kelo.Enemies
+{
 
 public class Enemy : MonoBehaviour
 {
@@ -14,4 +14,7 @@ public class Enemy : MonoBehaviour
     {
             EnemyList.enemies.Remove(this);
     }
+    
+   
+}
 }

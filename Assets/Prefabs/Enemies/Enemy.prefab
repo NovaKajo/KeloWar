@@ -226,7 +226,13 @@ MonoBehaviour:
   aggroCooldown: 10
   health: {fileID: -5981686857204753107}
   mover: {fileID: 9118481997870891363}
-  patrolSpeedfraction: 0.5
+  attackPlayerByDefault: 1
+  tagToSearchTarget:
+  - Player
+  patrolPath: {fileID: 0}
+  waypointTolerance: 3
+  PatrolDwellTime: 5
+  patrolSpeedfraction: 0.3
 --- !u!114 &9118481997870891363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,10 +259,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc776e956c4ceda449b344b41bdd29d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doesDamageOnCollision: 1
+  canMove: 1
+  alwaysLookAtTarget: 0
+  basicAttackBehaviour: 1
+  attackBehaviour: {fileID: 0}
   attackRange: 3.5
   TimeBetweenAttacks: 1
+  timeBetweenCollisionDamage: 1
   figtherDamage: 5
+  collisionDamage: 5
   target: {fileID: 0}
+  isReclaimer: 0
 --- !u!114 &1626472606106068775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,7 +305,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 5090054834678258929}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.8
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50

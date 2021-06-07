@@ -1,7 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Kelo.Core;
+using Kelo.Enemies;
 using Kelo.Stats;
 using UnityEngine;
 
@@ -22,7 +20,13 @@ namespace Kelo.Player
 
     [SerializeField] private float swordRange = 3f;
     [SerializeField] private float lookAtSpeed = 10f;
-    [SerializeField] private float attackTime = 1f;
+    
+    [Range(0.2f, 3f)]
+    [SerializeField] private float attackTime = 0.5f;
+    [Range(1.5f,3f)]
+    [SerializeField] private float bowAttackSpeed = 2f;
+  
+
     private float lastTimesinceAttack = Mathf.Infinity;
 
     private Animator animator;
@@ -36,26 +40,30 @@ namespace Kelo.Player
     
     private Health targetHealth;
 
-    public bool readyToAttack = false;
+    public bool canAttack = false;
     
     private void Start() {
         scheduler = GetComponent<Scheduler>();
         animator = GetComponentInChildren<Animator>();
         playerHealth = GetComponent<Health>();
+   
     }
 
     private void Update() {
+        animator.SetFloat("bowAttackSpeed",bowAttackSpeed); // evitable solo por motivos de pruebas
+        canAttack = false;
+        lastTimesinceAttack += Time.deltaTime;
         if(!playerHealth.IsDead())
         {
 
             LookAtTarget();
-            if(lastTimesinceAttack>=attackTime)
+            if(lastTimesinceAttack>attackTime)
             {
+               
             AttackTarget();
 
             }
         }
-        lastTimesinceAttack += Time.deltaTime;
     }
 
     public void LookAtTarget()
@@ -85,12 +93,11 @@ namespace Kelo.Player
             }
             return;
         }
-        if(!readyToAttack)
+        if(!canAttack)
         {
             return;
         }
-        
-        
+        lastTimesinceAttack = 0;                
         if (Vector3.Distance(targetEnemy.transform.position, this.transform.position) < swordRange)
         {
             HandleSwordAttack();
@@ -100,15 +107,17 @@ namespace Kelo.Player
             //Debug.Log("attack with bow");
             HandleBowAttack();
         }
-        lastTimesinceAttack = 0;
     }
 
     private void HandleBowAttack()
     {
-        arrowInHand.gameObject.SetActive(true);
         SwordGJ.gameObject.SetActive(false);
-        BowGJ.gameObject.SetActive(true);     
+        arrowInHand.gameObject.SetActive(true);
+        BowGJ.gameObject.SetActive(true);
+        if(!animator.GetCurrentAnimatorStateInfo(2).IsName("Attack01_Bow")){
+
         animator.SetTrigger(bowHash);
+        }
     }
 
     private void HandleSwordAttack()
